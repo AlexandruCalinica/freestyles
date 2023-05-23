@@ -1,0 +1,28 @@
+{
+  "name": "@freestyles/core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexandru Calinica",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/generator": "^7.21.5",
+    "@babel/parser": "^7.21.8",
+    "@babel/traverse": "^7.21.5",
+    "@babel/types": "^7.21.5",
+    "@emotion/css": "^11.11.0",
+    "@styled-system/css": "^5.1.5",
+    "prettier": "^2.8.8"
+  },
+  "devDependencies": {
+    "@types/babel__generator": "^7.6.4",
+    "@types/babel__traverse": "^7.18.5",
+    "@types/node": "^20.2.1",
+    "@types/prettier": "^2.7.2",
+    "@types/styled-system__css": "^5.0.17",
+    "typescript": "^5.0.4"
+  }
+}

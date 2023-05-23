@@ -1,0 +1,20 @@
+{
+  "name": "@freestyles/sandbox",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexandru Calinica",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@freestyles/core": "^1.0.0"
+  }
+}
