@@ -1,27 +1,20 @@
 import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+// @ts-ignore
+import { cx } from "@emotion/css";
 
 function App() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const foo = () => {};
-  function baz() {
-    return true;
-  }
+  const [count, setCount] = useState(0);
 
   return (
     <>
       <div
         border="1px solid white"
-        // padding={cx({
-        //   'abc': isOpen,
-        //   'xyz': true,
-        //   'wfg': false
-        // })}
+        padding="1rem"
         marginBottom="100px"
-        visibility={isOpen && true && !"asd" ? "visible" : "hidden"}
-        background={true ? "gray" : isOpen ? "salmon" : "white"}
-        color={isOpen ? (false ? (true ? "green" : "yellow") : "red") : "blue"}
-        display={isOpen ? "relative" : "block"}
+        backgroundColor={count ? "salmon" : "greenyellow"}
       >
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
@@ -45,3 +38,5 @@ function App() {
     </>
   );
 }
+
+export default App;

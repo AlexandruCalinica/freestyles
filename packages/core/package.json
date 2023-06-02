@@ -2,8 +2,23 @@
   "name": "@freestyles/core",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
+    "stub": "npx unbuild --stub",
+    "dev": "nodemon ./node/index.ts",
+    "build": "npx unbuild",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alexandru Calinica",
@@ -11,18 +26,26 @@
   "dependencies": {
     "@babel/generator": "^7.21.5",
     "@babel/parser": "^7.21.8",
+    "@babel/template": "^7.21.9",
     "@babel/traverse": "^7.21.5",
     "@babel/types": "^7.21.5",
     "@emotion/css": "^11.11.0",
     "@styled-system/css": "^5.1.5",
+    "@styled-system/props": "^5.1.5",
     "prettier": "^2.8.8"
   },
   "devDependencies": {
     "@types/babel__generator": "^7.6.4",
+    "@types/babel__template": "^7.4.1",
     "@types/babel__traverse": "^7.18.5",
     "@types/node": "^20.2.1",
     "@types/prettier": "^2.7.2",
     "@types/styled-system__css": "^5.0.17",
-    "typescript": "^5.0.4"
+    "@types/styled-system__props": "^5.1.1",
+    "typescript": "^5.0.4",
+    "unbuild": "^1.2.1"
+  },
+  "peerDependencies": {
+    "vite": "^4.3.2"
   }
 }

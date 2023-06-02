@@ -1,19 +1,18 @@
-import { PluginOption } from "vite";
-
-import parseJSX from "@freestyles/core/src/parser/jsx";
-import { getCssStyles } from "@freestyles/core/src/styler";
+import type { PluginOption } from "vite";
+import { parseJSX, getCssStyles } from "@freestyles/core";
 
 const theme = {};
 
 function viteReactFreestyles(): PluginOption {
   return {
     name: "vite-plugin-react-freestyles",
+    enforce: "pre",
     transform(src: string, id: string) {
       if (!/\.tsx?|\.jsx?$/.test(id)) return;
 
       return parseJSX(src, theme);
     },
-    transformIndexHtml(html: string) {
+    transformIndexHtml() {
       return [
         {
           tag: "style",

@@ -2,17 +2,33 @@
   "name": "@freestyles/react",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
+    "build": "npx unbuild",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alexandru Calinica",
   "license": "ISC",
-  "devDependencies": {
-    "typescript": "^5.0.4",
-    "vite": "^4.3.8"
-  },
   "dependencies": {
     "@freestyles/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "unbuild": "^1.2.1",
+    "typescript": "^5.0.4"
+  },
+  "peerDependencies": {
+    "vite": "^4.3.2"
   }
 }

@@ -1,22 +1,36 @@
 import { parse } from "@babel/parser";
-import traverse from "@babel/traverse";
-import generate from "@babel/generator";
-import {
+import _traverse from "@babel/traverse";
+import _generate from "@babel/generator";
+import type {
   JSXAttribute,
-  jSXAttribute,
   JSXIdentifier,
   StringLiteral,
+  ConditionalExpression,
+  JSXExpressionContainer,
+} from "@babel/types";
+import {
+  jSXAttribute,
   jSXIdentifier,
   stringLiteral,
   isJSXOpeningElement,
 } from "@babel/types";
 
-import { css, styledSystem } from "../styler";
+import { extractLiteralProps, extractConditionalProp } from "../styler";
 import domElements from "../utils/domElements";
 import stripStyleAttributes from "../utils/stripStyleAttributes";
+import parseConditional from "../utils/parseConditional";
+import makeCXExpression from "../utils/makeCXExpression";
+
+// @ts-ignore
+const traverse = _traverse.default as typeof _traverse;
+// @ts-ignore
+const generate = _generate.default as typeof _generate;
 
 function parseJSX(code: string, theme: object = {}) {
-  const ast = parse(code, { plugins: ["jsx"] });
+  const ast = parse(code, {
+    sourceType: "module",
+    plugins: ["jsx", "typescript"],
+  });
 
   traverse(ast, {
     enter(path) {
@@ -26,32 +40,74 @@ function parseJSX(code: string, theme: object = {}) {
       ) {
         if (path.node.attributes.length === 0) return;
 
-        // handle different Value nodes. e.g. StringLiteral, NumericLiteral, etc.
+        let expressionPropKeys: string[] = [];
+        let cxProperties: Record<string, string[]> = {};
 
-        const rawProps = path.node.attributes.reduce(
-          (acc, curr) => ({
-            ...acc,
-            [(curr as JSXAttribute).name.name as string]: (
-              (curr as JSXAttribute).value as StringLiteral
-            ).value,
-          }),
-          {}
-        );
+        const rawProps = path.node.attributes.reduce((acc, curr) => {
+          if (!(curr as JSXAttribute).value) return acc;
 
-        const styledProps = styledSystem(rawProps)(theme);
-        const className = css(styledProps as any);
+          switch ((curr as JSXAttribute).value?.type) {
+            case "StringLiteral":
+              return {
+                ...acc,
+                [(curr as JSXAttribute).name.name as string]: (
+                  (curr as JSXAttribute).value as StringLiteral
+                ).value,
+              };
+            case "JSXExpressionContainer":
+              if (
+                ((curr as JSXAttribute).value as JSXExpressionContainer)
+                  .expression.type === "ConditionalExpression"
+              ) {
+                const node = curr as JSXAttribute;
+                const name = node.name.name as string;
+                const value = node.value as JSXExpressionContainer;
+                const expression = value.expression as ConditionalExpression;
+                const props = extractConditionalProp(name, expression);
+                Object.assign(cxProperties, parseConditional(props));
+                expressionPropKeys.push(name);
+              }
 
-        path.node.attributes = stripStyleAttributes(
-          path.node.attributes,
-          Object.keys(styledProps)
-        );
+              if (
+                ((curr as JSXAttribute).value as JSXExpressionContainer)
+                  .expression.type === "CallExpression"
+              ) {
+              }
+              return acc;
+            default:
+              return acc;
+          }
+        }, {});
 
-        const classNameAttr = jSXAttribute(
-          jSXIdentifier("className"),
-          stringLiteral(className)
-        );
+        const css = extractLiteralProps(rawProps, theme);
 
-        path.node.attributes.push(classNameAttr);
+        if (!css) return;
+        const [className, propKeys] = css;
+
+        path.node.attributes = stripStyleAttributes(path.node.attributes, [
+          ...propKeys,
+          ...expressionPropKeys,
+        ]);
+
+        const classNameNode = (() => {
+          if (expressionPropKeys.length > 0) {
+            // expression className
+            return jSXAttribute(
+              jSXIdentifier("className"),
+              makeCXExpression({
+                [className]: ["true"],
+                ...cxProperties,
+              })
+            );
+          }
+          // literal className
+          return jSXAttribute(
+            jSXIdentifier("className"),
+            stringLiteral(className)
+          );
+        })();
+
+        path.node.attributes.push(classNameNode);
       }
     },
   });
